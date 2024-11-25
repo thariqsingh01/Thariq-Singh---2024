@@ -1,0 +1,17 @@
+import string
+
+def ispangram(str1, alphabet=string.ascii_lowercase):
+    # Remove spaces and convert the string to lowercase
+    str1 = str1.replace(" ", "").lower()
+
+    # Check if all letters of the alphabet are present in the string
+    if set(alphabet).issubset(set(str1)):
+        print("String is a Pangram")
+    else:
+        print("String is not a Pangram")
+
+# Get user input
+user_input = input("Enter a string: ")
+
+# Call the function with the user input
+ispangram(user_input)
