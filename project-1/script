@@ -1,44 +1,62 @@
-from typing import List
-import math
+from collections import Counter
 
-class WeightedAverage:
-    def __init__(self, w: List[float]):
-        self.weights = w
-        self.n = len(w)  # Number of entries
-        self.entries = []  # Stores the last n entries of the signal
+class FrequentWordsCounter:
 
-    def process(self, x: float) -> float:
-        # Add the new entry to the front of the list
-        self.entries.insert(0, x)
+    # Variable to store number of words to be checked and variable to store word counts
+    def __init__(self, n: int = 10):
+        self.top_n = n
+        self.word_counts = Counter()
 
-        # Keep only the last n entries
-        if len(self.entries) > self.n:
-            self.entries.pop()
+    # Convert the word to lowercase to ensure case-insensitivity
+    def process_word(self, word: str):
+        word = word.lower()
+        self.word_counts[word] += 1
 
-        # Compute the weighted sum average
-        weighted_sum = sum(w * x for w, x in zip(self.weights, self.entries))
-        return weighted_sum / sum(self.weights)  # Normalize by sum of weights, not n
+    # Retrieve the top n words by frequency using a for loop
+    def get_top_words(self):
+        top_words = []
 
-# Define weights (with floats)
-weights = [5.0, 4.0, 3.0, 2.0, 1.0]
-wa = WeightedAverage(weights)
+        # Sort the word counts
+        word_count_items = list(self.word_counts.items())
+        word_count_items.sort(key=self._sort_by_count, reverse=True)
 
-# Example signal
-signal = [1, 2, 3, 4, 5]
+        # Take the top n words
+        for word, count in word_count_items[:self.top_n]:
+            top_words.append((word, count))
 
-# Process the signal
-for s in signal:
-    y = wa.process(s)
-    print(f"Input: {s}, Weighted Average: {y}")
+        return top_words
 
-# Test with a sine wave
-print("\nTesting with a sine wave (weights = [1.0, 1.0, ..., 1.0]):")
-n = 5
-sine_weights = [1.0] * n  # Equal weights (as floats)
-wa_sine = WeightedAverage(sine_weights)
+    # Function to help sort words by looking at values(word count) in each dictionary item
+    def _sort_by_count(self, item):
+        return item[1]
 
-# Generate a sine wave signal
-for t in range(10):  # Test over 10 samples
-    sine_value = math.sin(t * 0.5)  # Example sine wave with step 0.5 radians
-    y = wa_sine.process(sine_value)
-    print(f"Sine Input: {sine_value:.2f}, Moving Average: {y:.2f}")
+    def set_top_n(self, n: int):
+        self.top_n = n
+
+# Ask the user for a value of n
+try:
+    user_n = int(input("Enter the number of top frequent words to track (default is 10): "))
+    if user_n <= 0:
+        print("Invalid input. Using the default value of 10.")
+        user_n = 10
+except ValueError:
+    print("Invalid input. Using the default value of 10.")
+    user_n = 10
+
+# Create a tracker with the specified top_n
+tracker = FrequentWordsCounter(n=user_n)
+
+# Ask the user for input text
+text = input("Enter a text to analyze: ")
+
+# Split the text into words
+words = text.split()
+
+# Process each word in the text
+for word in words:
+    tracker.process_word(word)
+
+# Display the top n words with counts
+print(f"Top {tracker.top_n} frequent words and their counts:")
+for word, count in tracker.get_top_words():
+    print(f"{word}: {count}")
