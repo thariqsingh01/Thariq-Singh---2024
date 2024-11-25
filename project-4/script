@@ -1,0 +1,43 @@
+def number_machine():
+    while True:
+        # Ask for a 5-digit number
+        num = int(input("Enter a 5-digit number: "))
+
+        # Check if the number is a valid 5-digit number
+        if num >= 10000 and num <= 99999:
+            break
+        else:
+            print("Please enter a valid 5-digit number.")
+
+    # Step 1: Reverse the number
+    reversed_num = 0
+    temp_num = num
+    while temp_num > 0:
+        reversed_num = reversed_num * 10 + (temp_num % 10)
+        temp_num //= 10
+
+    # Step 2: Sum the digits of the number
+    sum_of_digits = 0
+    temp_num = num
+    while temp_num > 0:
+        sum_of_digits += temp_num % 10
+        temp_num //= 10
+
+    # Step 3: Generate the new number by adding 1 to each digit
+    new_number = 0
+    place_value = 1
+    temp_num = num
+    while temp_num > 0:
+        digit = (temp_num % 10) + 1
+        new_number += digit * place_value
+        place_value *= 10
+        temp_num //= 10
+
+    # Output the results
+    print(f"Original number: {num}")
+    print(f"Reversed number: {reversed_num}")
+    print(f"Sum of digits: {sum_of_digits}")
+    print(f"New number (each digit incremented by 1): {new_number}")
+
+# Example usage
+number_machine()
