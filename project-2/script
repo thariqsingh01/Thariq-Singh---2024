@@ -1,0 +1,44 @@
+from typing import List
+import math
+
+class WeightedAverage:
+    def __init__(self, w: List[float]):
+        self.weights = w
+        self.n = len(w)  # Number of entries
+        self.entries = []  # Stores the last n entries of the signal
+
+    def process(self, x: float) -> float:
+        # Add the new entry to the front of the list
+        self.entries.insert(0, x)
+
+        # Keep only the last n entries
+        if len(self.entries) > self.n:
+            self.entries.pop()
+
+        # Compute the weighted sum average
+        weighted_sum = sum(w * x for w, x in zip(self.weights, self.entries))
+        return weighted_sum / sum(self.weights)  # Normalize by sum of weights, not n
+
+# Define weights (with floats)
+weights = [5.0, 4.0, 3.0, 2.0, 1.0]
+wa = WeightedAverage(weights)
+
+# Example signal
+signal = [1, 2, 3, 4, 5]
+
+# Process the signal
+for s in signal:
+    y = wa.process(s)
+    print(f"Input: {s}, Weighted Average: {y}")
+
+# Test with a sine wave
+print("\nTesting with a sine wave (weights = [1.0, 1.0, ..., 1.0]):")
+n = 5
+sine_weights = [1.0] * n  # Equal weights (as floats)
+wa_sine = WeightedAverage(sine_weights)
+
+# Generate a sine wave signal
+for t in range(10):  # Test over 10 samples
+    sine_value = math.sin(t * 0.5)  # Example sine wave with step 0.5 radians
+    y = wa_sine.process(sine_value)
+    print(f"Sine Input: {sine_value:.2f}, Moving Average: {y:.2f}")
